@@ -1,51 +1,78 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:your_project/blocs/login_bloc.dart';
-import 'package:your_project/repositories/auth_repository.dart';
-import 'package:your_project/ui/routes.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'dashboard_page.dart';  // Import the new dashboard page
 
-class LoginPage extends StatelessWidget {
+class LoginPage extends StatefulWidget {
+  @override
+  _LoginPageState createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
+  final TextEditingController _emailController = TextEditingController(text: 'abc@gmail.com');
+  final TextEditingController _passwordController = TextEditingController(text: '123456');
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  String? _errorMessage;
+
+  Future<void> _login() async {
+    try {
+      UserCredential userCredential = await _auth.signInWithEmailAndPassword(
+        email: _emailController.text.trim(),
+        password: _passwordController.text.trim(),
+      );
+      if (userCredential.user != null) {
+        // Navigate to DashboardPage after successful login
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => DashboardPage()),  // Navigate to the dashboard page
+        );
+      }
+    } on FirebaseAuthException catch (e) {
+      setState(() {
+        _errorMessage = e.message;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('PoPup Event Login')),
-      body: BlocProvider(
-        create: (context) => LoginBloc(authRepository: AuthRepository()),
-        child: LoginForm(),
+      appBar: AppBar(
+        title: Text('Login Page'),
       ),
-    );
-  }
-}
-
-class LoginForm extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return BlocListener<LoginBloc, LoginState>(
-      listener: (context, state) {
-        if (state is LoginSuccess) {
-          // Navigate to the Home Page after login
-          Navigator.pushReplacementNamed(context, AppRoutes.home);
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text('Login Success: ${state.user.email}'),
-          ));
-        } else if (state is LoginFailure) {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text('Login Failed: ${state.error}'),
-          ));
-        }
-      },
-      child: Center(
+      body: Padding(
+        padding: EdgeInsets.all(16.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text('Sign in to PoPup Event'),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                context.read<LoginBloc>().add(LoginWithGooglePressed());
-              },
-              child: Text('Sign in with Google'),
+            TextField(
+              controller: _emailController,
+              decoration: InputDecoration(
+                labelText: 'Email',
+                border: OutlineInputBorder(),
+              ),
             ),
+            SizedBox(height: 16.0),
+            TextField(
+              controller: _passwordController,
+              decoration: InputDecoration(
+                labelText: 'Password',
+                border: OutlineInputBorder(),
+              ),
+              obscureText: true,
+            ),
+            SizedBox(height: 16.0),
+            ElevatedButton(
+              onPressed: _login,
+              child: Text('Login'),
+            ),
+            if (_errorMessage != null) ...[
+              SizedBox(height: 16.0),
+              Text(
+                _errorMessage!,
+                style: TextStyle(color: Colors.red),
+              ),
+            ],
           ],
         ),
       ),

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "482143244017",
+    "project_id": "nihaar-5617d",
+    "storage_bucket": "nihaar-5617d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:482143244017:android:b2218b1d22421333de2350",
+        "android_client_info": {
+          "package_name": "com.example.popup_event"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB5QH3xhYuBVOFh2a9RQPF5SrGmWvmMgE0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
