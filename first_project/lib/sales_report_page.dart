@@ -51,28 +51,12 @@ class _SalesReportPageState extends State<SalesReportPage> {
   }
 
   Future<void> generateExcelFile() async {
+
+
+
     var excel = Excel.createExcel(); 
     Sheet sheetObject = excel['Sales Report'];
 
-    // Add table headers
-    // sheetObject.appendRow([
-    //   Cell.fromString('Product_name'),
-    //   Cell.fromString('Quantity'),
-    //   Cell.fromString('Price'),
-    //   Cell.fromString('Supplier'),
-    //   Cell.fromString('Description'),
-    // ]);
-
-    // Add data
-    // for (var data in salesData) {
-    //   sheetObject.appendRow([
-    //     Cell.fromString(data['Product_name'] ?? ''), 
-    //     Cell.fromString(data['Quantity']?.toString() ?? ''), 
-    //     Cell.fromString(data['Price']?.toString() ?? ''), 
-    //     Cell.fromString(data['Supplier'] ?? ''), 
-    //     Cell.fromString(data['Description'] ?? '')
-    //   ]);
-    // }
 
     // Save the Excel file
     var status = await Permission.storage.request();

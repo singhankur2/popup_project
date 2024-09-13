@@ -70,14 +70,19 @@ class _RegisterItemsPageState extends State<RegisterItemsPage> {
       return;
     }
 
-    // Save product to Firestore
     try {
-      await FirebaseFirestore.instance.collection('products').add({
+      // Generate a new document ID
+      final docRef = FirebaseFirestore.instance.collection('products').doc();
+      final productId = docRef.id;
+
+      // Save product to Firestore with the generated product ID
+      await docRef.set({
         'Product_name': productName,
         'Description': description,
         'Price': price,
         'Quantity': quantity,
         'Supplier_name': supplier,
+        'product_id': productId,
         // 'imageUrl': _image != null ? _image!.path : '', // Add image path if available
       });
 
@@ -96,6 +101,7 @@ class _RegisterItemsPageState extends State<RegisterItemsPage> {
             price: price,
             quantity: quantity,
             supplier: supplier,
+            itemId: productId, // Pass the product ID here
           ),
         ),
       );

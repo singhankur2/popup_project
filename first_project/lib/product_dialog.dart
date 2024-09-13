@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 
 class ProductDialog extends StatefulWidget {
   final Function(Map<String, dynamic>) onProductAdded;
@@ -15,6 +16,8 @@ class _ProductDialogState extends State<ProductDialog> {
   TextEditingController quantityController = TextEditingController();
   TextEditingController priceController = TextEditingController();
 
+  String _productData = '';
+
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
@@ -25,21 +28,33 @@ class _ProductDialogState extends State<ProductDialog> {
           TextField(
             controller: nameController,
             decoration: InputDecoration(labelText: 'Product Name'),
+            onChanged: (value) => _updateProductData(),
           ),
           TextField(
             controller: descriptionController,
             decoration: InputDecoration(labelText: 'Description'),
+            onChanged: (value) => _updateProductData(),
           ),
           TextField(
             controller: quantityController,
             decoration: InputDecoration(labelText: 'Quantity'),
             keyboardType: TextInputType.number,
+            onChanged: (value) => _updateProductData(),
           ),
           TextField(
             controller: priceController,
             decoration: InputDecoration(labelText: 'Price'),
             keyboardType: TextInputType.numberWithOptions(decimal: true),
+            onChanged: (value) => _updateProductData(),
           ),
+          SizedBox(height: 20),
+          _productData.isNotEmpty
+              ? QrImageView(
+                  data: _productData,
+                  version: QrVersions.auto,
+                  size: 200.0,
+                )
+              : Container(),
         ],
       ),
       actions: [
@@ -64,5 +79,14 @@ class _ProductDialogState extends State<ProductDialog> {
         ),
       ],
     );
+  }
+
+  void _updateProductData() {
+    setState(() {
+      _productData = 'Name: ${nameController.text}\n'
+                     'Description: ${descriptionController.text}\n'
+                     'Quantity: ${quantityController.text}\n'
+                     'Price: ${priceController.text}';
+    });
   }
 }

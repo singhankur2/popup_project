@@ -21,6 +21,8 @@ class _LoginPageState extends State<LoginPage> {
         password: _passwordController.text.trim(),
       );
       if (userCredential.user != null) {
+      
+      print('ankur');
         // Navigate to DashboardPage after successful login
         Navigator.push(
           context,
