@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'generate_invoice_page.dart';
 import 'register_items_page.dart';
 import 'sales_report_page.dart';
+import 'update_items_page.dart';  // Import the new page
 
 class DashboardPage extends StatelessWidget {
   @override
@@ -25,12 +26,11 @@ class DashboardPage extends StatelessWidget {
         ),
         child: Center(
           child: GridView.count(
-            crossAxisCount: 2,  // Display buttons in a 2x2 grid
+            crossAxisCount: 2,
             crossAxisSpacing: 16.0,
             mainAxisSpacing: 16.0,
             padding: EdgeInsets.all(16.0),
             children: [
-              // Generate Invoice Button
               _buildDashboardButton(
                 context,
                 label: 'Generate Invoice',
@@ -42,19 +42,17 @@ class DashboardPage extends StatelessWidget {
                   );
                 },
               ),
-              // Update Items Button
               _buildDashboardButton(
                 context,
                 label: 'Update Items',
                 icon: Icons.update,
                 onPressed: () {
-                  // Navigator.push(
-                  //   context,
-                  //   MaterialPageRoute(builder: (context) => UpdateItemsPage()),
-                  // );
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => UpdateItemsPage()),  // Navigate to the new page
+                  );
                 },
               ),
-              // Register Items Button
               _buildDashboardButton(
                 context,
                 label: 'Register Items',
@@ -66,7 +64,6 @@ class DashboardPage extends StatelessWidget {
                   );
                 },
               ),
-              // Sales Report Button
               _buildDashboardButton(
                 context,
                 label: 'Sales Report',
@@ -85,24 +82,23 @@ class DashboardPage extends StatelessWidget {
     );
   }
 
-  // A helper method to create each dashboard button
   Widget _buildDashboardButton(BuildContext context,
       {required String label, required IconData icon, required VoidCallback onPressed}) {
     return ElevatedButton(
       onPressed: onPressed,
       style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.white,  // White background
-        foregroundColor: Colors.deepOrangeAccent,  // Text and icon color
+        backgroundColor: Colors.white,
+        foregroundColor: Colors.deepOrangeAccent,
         elevation: 8.0,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8.0),  // Squared corners
+          borderRadius: BorderRadius.circular(8.0),
         ),
         padding: EdgeInsets.all(20),
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(icon, size: 50, color: Colors.deepOrangeAccent),  // Button icon
+          Icon(icon, size: 50, color: Colors.deepOrangeAccent),
           SizedBox(height: 10),
           Text(
             label,

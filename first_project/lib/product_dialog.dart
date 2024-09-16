@@ -55,8 +55,7 @@ class _ProductDialogState extends State<ProductDialog> {
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12.0),
                     ),
-                    prefixIcon:
-                        Icon(Icons.confirmation_number, color: Colors.deepOrangeAccent),
+                    prefixIcon: Icon(Icons.confirmation_number, color: Colors.deepOrangeAccent),
                   ),
                   keyboardType: TextInputType.number,
                 ),
@@ -101,11 +100,14 @@ class _ProductDialogState extends State<ProductDialog> {
             // Fetch product data
             final productData = await _productService.fetchProductDataFromFirestore(productId);
             if (productData != null) {
+              final priceString = productData['Price']?.toString() ?? '0.0';
+              final price = double.tryParse(priceString) ?? 0.0; // Convert price to double
               final productDetails = {
                 'Sold_product_id': productId,
                 'Product_name': productData['Product_name'],
                 'Sold_quantity': quantity,
-                'Total_sale_amount': productData['Price'] * quantity,
+                'Price': price,
+                'Total_sale_amount': price * quantity,
               };
 
               widget.onProductAdded(productDetails);

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'product_dialog.dart';
-import 'product_service.dart';
+import 'invoice_summary_page.dart'; // Import the new page
 
 class GenerateInvoicePage extends StatefulWidget {
   @override
@@ -9,8 +9,21 @@ class GenerateInvoicePage extends StatefulWidget {
 
 class _GenerateInvoicePageState extends State<GenerateInvoicePage> {
   List<Map<String, dynamic>> invoiceItems = [];
-  TextEditingController customerNameController = TextEditingController(text: 'Customer A'); // Default value
-  TextEditingController phoneNumberController = TextEditingController(text: '123456789'); // Default value
+  TextEditingController customerNameController = TextEditingController(text: 'Customer A');
+  TextEditingController phoneNumberController = TextEditingController(text: '123456789');
+
+  void _submitInvoice() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => InvoiceSummaryPage(
+          customerName: customerNameController.text,
+          phoneNumber: phoneNumberController.text,
+          items: invoiceItems,
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -84,6 +97,10 @@ class _GenerateInvoicePageState extends State<GenerateInvoicePage> {
                 itemCount: invoiceItems.length,
                 itemBuilder: (context, index) {
                   final item = invoiceItems[index];
+                  final price = item['Price'] ?? 0.0;
+                  final quantity = item['Sold_quantity'] ?? 1;
+                  final total = price * quantity;
+                  
                   return Card(
                     margin: EdgeInsets.symmetric(vertical: 8.0),
                     elevation: 5.0,
@@ -94,8 +111,8 @@ class _GenerateInvoicePageState extends State<GenerateInvoicePage> {
                       contentPadding: EdgeInsets.all(16.0),
                       title: Text(item['Product_name'] ?? 'No Name', style: TextStyle(fontWeight: FontWeight.bold)),
                       subtitle: Text(
-                        'Quantity: ${item['Sold_quantity']?.toString() ?? '0'}\n'
-                        'Price: \$${item['Total_sale_amount']?.toString() ?? '0.0'}',
+                        'Quantity: ${quantity.toString()}\n'
+                        'Total: \$${total.toStringAsFixed(2)}',
                         style: TextStyle(color: Colors.grey[700]),
                       ),
                     ),
@@ -104,36 +121,25 @@ class _GenerateInvoicePageState extends State<GenerateInvoicePage> {
               ),
             ),
             SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () async {
-                final productService = ProductService();
-
-                for (var item in invoiceItems) {
-                  final productId = item['Sold_product_id'];
-                  final quantity = item['Sold_quantity'];
-
-                  // Save or update sales data
-                  await productService.saveOrUpdateSalesData(productId, quantity);
-                }
-
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Invoice submitted successfully!')),
-                );
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.deepOrangeAccent,
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12.0),
+            Align(
+              alignment: Alignment.bottomRight,
+              child: ElevatedButton(
+                onPressed: _submitInvoice,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.deepOrangeAccent,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12.0),
+                  ),
                 ),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(Icons.check, color: Colors.white),
-                  SizedBox(width: 10),
-                  Text('Submit Invoice', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                ],
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.check, color: Colors.white),
+                    SizedBox(width: 10),
+                    Text('Submit Invoice', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                  ],
+                ),
               ),
             ),
           ],

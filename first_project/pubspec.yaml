@@ -49,7 +49,7 @@ dependencies:
 
   path_provider: ^2.1.4
 
-  excel: ^4.0.6
+  # excel: ^4.0.6
 
   permission_handler: ^11.3.1
 
