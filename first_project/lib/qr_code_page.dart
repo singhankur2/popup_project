@@ -1,17 +1,17 @@
 import 'dart:typed_data';
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
-import 'package:screenshot/screenshot.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
+import 'package:printing/printing.dart';
+import 'package:screenshot/screenshot.dart';
 
 class QRCodeScreen extends StatelessWidget {
   final String itemId;
   final double price;
+  final String productName;
 
-  const QRCodeScreen({super.key, required this.itemId, required this.price});
+  const QRCodeScreen({super.key, required this.itemId, required this.price, required this.productName});
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +24,7 @@ class QRCodeScreen extends StatelessWidget {
         elevation: 8.0,
       ),
       body: Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           gradient: LinearGradient(
             colors: [Colors.orangeAccent, Colors.pinkAccent],
             begin: Alignment.topLeft,
@@ -37,44 +37,60 @@ class QRCodeScreen extends StatelessWidget {
             children: [
               Screenshot(
                 controller: screenshotController,
-                child: QrImageView(
-                  data: itemId,
-                  version: QrVersions.auto,
-                  size: 200.0,
-                  gapless: false,
+                child: Column(
+                  children: [
+                    QrImageView(
+                      data: itemId,
+                      version: QrVersions.auto,
+                      size: 200.0,
+                      gapless: false,
+                    ),
+                    const SizedBox(height: 20),
+                    Text(
+                      'Product ID: $itemId',
+                      style: const TextStyle(fontSize: 18, color: Colors.white),
+                    ),
+                    Text(
+                      'Product Name: $productName',
+                      style: const TextStyle(fontSize: 18, color: Colors.white),
+                    ),
+                    Text(
+                      'Price: \$${price.toStringAsFixed(2)}',
+                      style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
+                    ),
+                  ],
                 ),
               ),
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () async {
                   try {
-                    // Capture screenshot of the QR code
                     final Uint8List? image = await screenshotController.capture();
 
                     if (image != null) {
-                      // Generate PDF
                       final pdf = pw.Document();
                       final pdfImage = pw.MemoryImage(image);
 
                       pdf.addPage(
                         pw.Page(
                           build: (pw.Context context) {
-                            return pw.Center(
-                              child: pw.Image(pdfImage),
+                            return pw.Column(
+                              children: [
+                                pw.Center(
+                                  child: pw.Image(pdfImage, height: 200, width: 200),
+                                ),
+                                pw.SizedBox(height: 20),
+                                pw.Text('Product ID: $itemId', style: pw.TextStyle(fontSize: 18)),
+                                pw.Text('Product Name: $productName', style: pw.TextStyle(fontSize: 18)),
+                                pw.Text('Price: \$${price.toStringAsFixed(2)}', style: pw.TextStyle(fontSize: 24, fontWeight: pw.FontWeight.bold)),
+                              ],
                             );
                           },
                         ),
                       );
 
-                      // Save the PDF to the device
-                      final Directory directory = await getTemporaryDirectory();
-                      final String pdfPath = '${directory.path}/qr_code_${DateTime.now().millisecondsSinceEpoch}.pdf';
-                      final File pdfFile = File(pdfPath);
-                      await pdfFile.writeAsBytes(await pdf.save());
-
-                      // Show a confirmation message
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('QR code saved as PDF. Path: $pdfPath')),
+                      await Printing.layoutPdf(
+                        onLayout: (PdfPageFormat format) async => pdf.save(),
                       );
                     } else {
                       ScaffoldMessenger.of(context).showSnackBar(
@@ -83,7 +99,7 @@ class QRCodeScreen extends StatelessWidget {
                     }
                   } catch (e) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Error saving QR code: $e')),
+                      SnackBar(content: Text('Error printing QR code: $e')),
                     );
                   }
                 },
@@ -94,27 +110,18 @@ class QRCodeScreen extends StatelessWidget {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8.0),
                   ),
-                  padding: EdgeInsets.all(15),
+                  padding: const EdgeInsets.all(15),
                 ),
-                child: Row(
+                child: const Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.save, size: 30),
+                    Icon(Icons.print, size: 30),
                     SizedBox(width: 10),
                     Text(
-                      'Save QR as PDF',
+                      'Print QR',
                       style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                   ],
-                ),
-              ),
-              const SizedBox(height: 20),
-              Text(
-                'Price: \$${price.toStringAsFixed(2)}',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
                 ),
               ),
             ],
@@ -124,3 +131,4 @@ class QRCodeScreen extends StatelessWidget {
     );
   }
 }
+

@@ -2,14 +2,17 @@ import 'package:flutter/material.dart';
 import 'generate_invoice_page.dart';
 import 'register_items_page.dart';
 import 'sales_report_page.dart';
-import 'update_items_page.dart';  // Import the new page
+import 'update_items_page.dart';
+import 'product_list_page.dart';  // Import the new page
 
 class DashboardPage extends StatelessWidget {
+  const DashboardPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           'Dashboard',
           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
         ),
@@ -17,7 +20,7 @@ class DashboardPage extends StatelessWidget {
         elevation: 8.0,
       ),
       body: Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           gradient: LinearGradient(
             colors: [Colors.orangeAccent, Colors.pinkAccent],
             begin: Alignment.topLeft,
@@ -29,7 +32,7 @@ class DashboardPage extends StatelessWidget {
             crossAxisCount: 2,
             crossAxisSpacing: 16.0,
             mainAxisSpacing: 16.0,
-            padding: EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(16.0),
             children: [
               _buildDashboardButton(
                 context,
@@ -38,7 +41,7 @@ class DashboardPage extends StatelessWidget {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => GenerateInvoicePage()),
+                    MaterialPageRoute(builder: (context) => const GenerateInvoicePage()),
                   );
                 },
               ),
@@ -49,7 +52,7 @@ class DashboardPage extends StatelessWidget {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => UpdateItemsPage()),  // Navigate to the new page
+                    MaterialPageRoute(builder: (context) => const UpdateItemsPage()),
                   );
                 },
               ),
@@ -60,7 +63,7 @@ class DashboardPage extends StatelessWidget {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => RegisterItemsPage()),
+                    MaterialPageRoute(builder: (context) => const RegisterItemsPage()),
                   );
                 },
               ),
@@ -71,7 +74,18 @@ class DashboardPage extends StatelessWidget {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => SalesReportPage()),
+                    MaterialPageRoute(builder: (context) => const SalesReportPage()),
+                  );
+                },
+              ),
+              _buildDashboardButton(
+                context,
+                label: 'Product List',
+                icon: Icons.list,
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const ProductListPage()),
                   );
                 },
               ),
@@ -93,16 +107,16 @@ class DashboardPage extends StatelessWidget {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8.0),
         ),
-        padding: EdgeInsets.all(20),
+        padding: const EdgeInsets.all(20),
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(icon, size: 50, color: Colors.deepOrangeAccent),
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
           Text(
             label,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
               color: Colors.deepOrangeAccent,

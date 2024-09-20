@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:qr_code_scanner/qr_code_scanner.dart'; // Import QR Code Scanner
 import 'product_service.dart';
 
 class ProductDialog extends StatefulWidget {
   final Function(Map<String, dynamic>) onProductAdded;
 
-  ProductDialog({required this.onProductAdded});
+  const ProductDialog({super.key, required this.onProductAdded});
 
   @override
   _ProductDialogState createState() => _ProductDialogState();
@@ -12,11 +13,49 @@ class ProductDialog extends StatefulWidget {
 
 class _ProductDialogState extends State<ProductDialog> {
   final TextEditingController _productIdController =
-      TextEditingController(text: 'yVPqSci5eIFrev2YHYxt'); // Default Product ID
+      TextEditingController(text: ''); // Product ID will come from QR code
   final TextEditingController _quantityController =
       TextEditingController(text: '1'); // Default quantity is 1
   final ProductService _productService = ProductService();
   int _quantity = 1;
+  final GlobalKey qrKey = GlobalKey(debugLabel: 'QR'); // QR scanner key
+  QRViewController? _qrController;
+  String? scannedCode;
+
+  @override
+  void dispose() {
+    _qrController?.dispose();
+    super.dispose();
+  }
+
+  // Function to handle QR code scanning
+  void _onQRViewCreated(QRViewController controller) {
+    setState(() {
+      _qrController = controller;
+    });
+    controller.scannedDataStream.listen((scanData) {
+      setState(() {
+        scannedCode = scanData.code; // Capture the scanned QR code
+        _productIdController.text = scannedCode!; // Populate Product ID field
+      });
+      controller.pauseCamera(); // Pause the camera after scanning
+      Navigator.pop(context); // Close the scanner
+    });
+  }
+
+  // Function to show the QR code scanner in a full-screen modal
+  void _scanQRCode() {
+    showDialog(
+      context: context,
+      builder: (context) => Scaffold(
+        appBar: AppBar(title: const Text('Scan QR Code')),
+        body: QRView(
+          key: qrKey,
+          onQRViewCreated: _onQRViewCreated,
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +64,7 @@ class _ProductDialogState extends State<ProductDialog> {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12.0),
       ),
-      title: Text(
+      title: const Text(
         'Add Product',
         style: TextStyle(color: Colors.deepOrangeAccent),
       ),
@@ -36,14 +75,17 @@ class _ProductDialogState extends State<ProductDialog> {
             controller: _productIdController,
             decoration: InputDecoration(
               labelText: 'Product ID',
-              labelStyle: TextStyle(color: Colors.deepOrangeAccent),
+              labelStyle: const TextStyle(color: Colors.deepOrangeAccent),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12.0),
               ),
-              prefixIcon: Icon(Icons.qr_code, color: Colors.deepOrangeAccent),
+              prefixIcon: IconButton(
+                icon: const Icon(Icons.qr_code, color: Colors.deepOrangeAccent),
+                onPressed: _scanQRCode, // Open QR code scanner on button press
+              ),
             ),
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           Row(
             children: [
               Expanded(
@@ -51,17 +93,17 @@ class _ProductDialogState extends State<ProductDialog> {
                   controller: _quantityController,
                   decoration: InputDecoration(
                     labelText: 'Quantity',
-                    labelStyle: TextStyle(color: Colors.deepOrangeAccent),
+                    labelStyle: const TextStyle(color: Colors.deepOrangeAccent),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12.0),
                     ),
-                    prefixIcon: Icon(Icons.confirmation_number, color: Colors.deepOrangeAccent),
+                    prefixIcon: const Icon(Icons.confirmation_number, color: Colors.deepOrangeAccent),
                   ),
                   keyboardType: TextInputType.number,
                 ),
               ),
               IconButton(
-                icon: Icon(Icons.remove, color: Colors.pink),
+                icon: const Icon(Icons.remove, color: Colors.pink),
                 onPressed: () {
                   setState(() {
                     if (_quantity > 1) _quantity--;
@@ -70,7 +112,7 @@ class _ProductDialogState extends State<ProductDialog> {
                 },
               ),
               IconButton(
-                icon: Icon(Icons.add, color: Colors.pink),
+                icon: const Icon(Icons.add, color: Colors.pink),
                 onPressed: () {
                   setState(() {
                     _quantity++;
@@ -87,7 +129,7 @@ class _ProductDialogState extends State<ProductDialog> {
           onPressed: () {
             Navigator.of(context).pop();
           },
-          child: Text(
+          child: const Text(
             'Cancel',
             style: TextStyle(color: Colors.pink),
           ),
@@ -115,14 +157,14 @@ class _ProductDialogState extends State<ProductDialog> {
             } else {
               // Show error if product is not found
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
+                const SnackBar(
                   content: Text('Product not found!'),
                   backgroundColor: Colors.red,
                 ),
               );
             }
           },
-          child: Text(
+          child: const Text(
             'Done',
             style: TextStyle(color: Colors.pink),
           ),
@@ -131,3 +173,10 @@ class _ProductDialogState extends State<ProductDialog> {
     );
   }
 }
+
+
+// 333
+
+
+
+
